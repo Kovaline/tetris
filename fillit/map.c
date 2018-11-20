@@ -58,24 +58,17 @@ int		issafe(char *str, char **map,int row, int col, int size)
 	while (str[i] != '\0')
 	{
 		if (str[i] != '.' && ((size - 1 < row + (i / 4) - (first / 4)) || (size - 1 < col + (i % 4) - (first % 4))))
-		{
-			//printf("return end\n");
 			return (0);
-		}
 		else if (str[i] != '.' && map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] != '.')
-		{
-			//printf("return 0\n");
 			return (0);
-		}
 		else if (str[i] != '.' && map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] == '.')
 		{
-			//map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] = str[i];
+			map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] = str[i];
 			i++;
 		}
 		else if (str[i] == '.')
 			i++;
 	}
-	//printf("return 1\n");
 	return (1);
 }
 
@@ -129,7 +122,6 @@ int	backtracking(char **str, char **map, int i, int size)
 {
 	int row;
 	int col;
-	int check;
 
 int j = 0;
 	row = 0;
@@ -143,7 +135,6 @@ int j = 0;
 		{
 			if (issafe(str[i], map, row, col, size) == 1)
 			{
-				map = fillmap(str[i], map, row, col);
 				if (backtracking(str, map, i + 1, size) == 1)
 					return (1);
 			}
@@ -151,7 +142,7 @@ int j = 0;
 			{
 			j = 0;
 			//puts(map[2]);
-		/*	while (map[j])
+	/*	while (map[j])
 	{
 	puts(map[j]);
 		j++;
@@ -203,7 +194,7 @@ void	startmap(char **str)
 	map = newmap(i);
 	while ((backtracking(str, map, 0, i)) == 0)
 	{
-		free_square(map, i);
+		free(map);
 		i++;
 		map = newmap(i);
 	}

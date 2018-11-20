@@ -44,7 +44,7 @@ char	**readfile(char *str)
 		tmp[i] = strdup(line);
 		i++;
 	}
-	i = 0;
+	close(fd);
 	return (tmp);
 }
 
@@ -73,29 +73,61 @@ char	**change(char **str)
 	return (str);
 }
 
+char 	**changestr(char **tmp, int counter)
+{
+	char 	**str;
+	int		i;
+	int		j;
+	int		k;
+	int		z;
+
+	i = 0;
+	k = 0;
+	z = 0;
+	str = (char **)malloc((counter / 5 + 2) * sizeof(char *));
+	str[k] = (char *)malloc((16 + 1) * sizeof(char));
+	while (tmp[i])
+	{
+		j = 0;
+		if (tmp[i][0] == '\0')
+		{
+			str[k][z] = '\0';
+			k++;
+			str[k] = (char *)malloc((16 + 1) * sizeof(char));
+			z = 0;
+		}
+		while(tmp[i][j])
+			str[k][z++] = tmp[i][j++];
+		i++;
+	}
+	str[k][z] = '\0';
+	str[k + 1] = 0;
+
+	return (str);
+}
+
 int		main(int argc, char **argv)
 {
 	int fd;
 	char **str;
 	int counter;
+	argc = argc + 1;
 	
-
 	str = readfile(argv[1]);
-	//str = cuttet(str);
+		fd = open(argv[1], O_RDONLY);
+	counter = count(fd);
+	close (fd);
+	if (counter % 5 != 4) 
+	{
+		write (1, "error\n", 6);
+		return (0);
+	}
 	if (validation(str) == -1)
 	{
 		write(1, "error\n", 6);
 		return (0);
 	}
-	
 	str = change(str);
-	int i = 0;
-	while (str[i] != '\0')
-	{
-
-		puts(str[i]);
-
-		i++;
-	}
+	str = changestr(str, counter);
 	startmap(str);
 }

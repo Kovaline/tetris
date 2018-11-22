@@ -6,26 +6,16 @@
 /*   By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/17 10:26:38 by ikovalen          #+#    #+#             */
-/*   Updated: 2018/11/17 10:26:43 by ikovalen         ###   ########.fr       */
+/*   Updated: 2018/11/22 12:23:32 by ikovalen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include <stdio.h>
 
-
-int		ft_dots(char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i] == '.')
-		i++;
-	return (i);
-}
 char	**newmap(int i)
 {
-	char **map;
+	char	**map;
 	int		col;
 	int		row;
 
@@ -35,7 +25,7 @@ char	**newmap(int i)
 	while (row < i)
 	{
 		map[row] = (char *)malloc(i * sizeof(char) + 1);
-		while(col < i)
+		while (col < i)
 		{
 			map[row][col] = '.';
 			col++;
@@ -48,54 +38,41 @@ char	**newmap(int i)
 	return (map);
 }
 
-int		issafe(char *str, char **map,int row, int col, int size)
+int		issafe(char *str, char **map, int row, int col)
 {
-	int first;
+	int check;
 	int	i;
+	int first;
+	int size;
 
-	first = ft_dots(str);
-	i = first;
-	while (str[i] != '\0')
+	size = ft_strlen(map[0]);
+	check = 0;
+	i = -1;
+	while (str[++i] != '\0')
 	{
-		if (str[i] != '.' && ((size - 1 < row + (i / 4) - (first / 4)) || (size - 1 < col + (i % 4) - (first % 4))))
+		if (str[i] != '.' && check++ == 0)
+			first = i;
+		if (str[i] != '.' && ((size <= row + (i / 4) - (first / 4))
+			|| (size <= col + (i % 4) - (first % 4))))
 			return (0);
-		else if (str[i] != '.' && map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] != '.')
+		else if (str[i] != '.' && map[row + (i / 4) - (first / 4)]
+			[col + (i % 4) - (first % 4)] != '.')
 			return (0);
-		else if (str[i] != '.' && map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] == '.')
-		{
-			map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] = str[i];
-			i++;
-		}
-		else if (str[i] == '.')
-			i++;
+		else if (str[i] != '.' && map[row + (i / 4) -
+			(first / 4)][col + (i % 4) - (first % 4)] == '.')
+			map[row + (i / 4) - (first / 4)]
+			[col + (i % 4) - (first % 4)] = str[i];
 	}
 	return (1);
 }
 
-char	**fillmap(char *str, char **map, int row, int col)
-{
-	int i;
-	int first;
-
-	first = ft_dots(str);
-	i = first;
-	while (str[i] != '\0')
-	{
-		if (str[i] != '.')
-			map[row + (i / 4) - (first / 4)][col + (i % 4) - (first % 4)] = str[i];
-		i++;
-	}
-	return (map);
-}
-
 char	**rmletters(char **map, char *str)
 {
-	int i;
-	int j;
-	char c;
+	int		i;
+	int		j;
+	char	c;
 
 	i = 0;
-	j = 0;
 	while (str[i] != '\0')
 	{
 		if (str[i] != '.')
@@ -105,6 +82,7 @@ char	**rmletters(char **map, char *str)
 	i = 0;
 	while (map[i] != '\0')
 	{
+		j = 0;
 		while (map[i][j] != '\0')
 		{
 			if (map[i][j] == c)
@@ -112,20 +90,16 @@ char	**rmletters(char **map, char *str)
 			j++;
 		}
 		i++;
-		j = 0;
 	}
-	j = 0;
 	return (map);
 }
 
-int	backtracking(char **str, char **map, int i, int size)
+int		backtracking(char **str, char **map, int i, int size)
 {
 	int row;
 	int col;
 
-int j = 0;
 	row = 0;
-	col = 0;
 	if (str[i] == '\0')
 		return (1);
 	while (row < size)
@@ -133,35 +107,11 @@ int j = 0;
 		col = 0;
 		while (col < size)
 		{
-			if (issafe(str[i], map, row, col, size) == 1)
-			{
-				if (backtracking(str, map, i + 1, size) == 1)
-					return (1);
-			}
+			if (issafe(str[i], map, row, col) == 1 &&
+				backtracking(str, map, i + 1, size) == 1)
+				return (1);
 			else
-			{
-			j = 0;
-			//puts(map[2]);
-	/*	while (map[j])
-	{
-	puts(map[j]);
-		j++;
-	}*/
-			map = rmletters(map, str[i]);
-			//printf("row is, %i\n", row);
-			//printf("col is, %i\n", col);
-
-			/*if (map[row][col + 1] == '\0')
-			{
-				row++;
-				col = 0;
-			}
-			else
-			{
-				col++;
-			}*/
-			//printf("%i %i\n", row, col);
-			}
+				map = rmletters(map, str[i]);
 			col++;
 		}
 		row++;
@@ -169,27 +119,13 @@ int j = 0;
 	return (0);
 }
 
-void	free_square(char **map, int size)
-{
-	int j;
-
-	j = 0;
-	while (j < size)
-	{
-		free(map[j]);
-		j++;
-	}
-	free(map);
-}
-
 void	startmap(char **str)
 {
-	int i;
-	char **map;
-	int j;
+	int		i;
+	char	**map;
+	int		j;
 
 	j = 0;
-
 	i = 2;
 	map = newmap(i);
 	while ((backtracking(str, map, 0, i)) == 0)
@@ -201,7 +137,7 @@ void	startmap(char **str)
 	i = 0;
 	while (map[i])
 	{
-		puts(map[i]);
+		ft_putendl(map[i]);
 		i++;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/25 12:24:50 by ikovalen          #+#    #+#             */
-/*   Updated: 2018/11/07 13:39:33 by ikovalen         ###   ########.fr       */
+/*   Updated: 2018/11/22 12:09:49 by ikovalen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,11 @@ typedef struct		s_list
 	struct s_list	*next;
 }					t_list;
 
+char				**setstr(char **str, int k, int z);
+int					countchars2(char **str, int i, int j, int count);
 void				startmap(char **str);
-int                 validation(char **str);
-int                 get_next_line(const int fd, char **line);
+int					validation(char **str);
+int					get_next_line(const int fd, char **line);
 void				ft_putchar(char c);
 size_t				ft_strlen(const char *str);
 char				*ft_strcpy(char *dest, const char *src);

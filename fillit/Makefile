@@ -6,13 +6,13 @@
 #    By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/11/20 12:40:48 by ikovalen          #+#    #+#              #
-#    Updated: 2018/11/20 12:47:15 by ikovalen         ###   ########.fr        #
+#    Updated: 2018/11/22 13:07:25 by ikovalen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = fillit
 
-SRC = fillit.c validation.c map.c
+SRC = fillit.c validation.c countchars2.c map.c
 
 OBJ = *.o
 

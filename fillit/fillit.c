@@ -6,7 +6,7 @@
 /*   By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/08 12:50:33 by ikovalen          #+#    #+#             */
-/*   Updated: 2018/11/22 13:08:28 by ikovalen         ###   ########.fr       */
+/*   Updated: 2018/11/24 13:00:35 by ikovalen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,33 @@ int		count(int fd)
 
 	counter = 0;
 	while (get_next_line(fd, &line1) > 0)
+	{
+		free(line1);
 		counter++;
+	}
+	close(fd);
+	free(line1);
 	return (counter);
 }
 
-char	**readfile(char *str)
+char	**readfile(char *str, int counter)
 {
 	char	*line;
 	char	**tmp;
 	int		i;
-	int		counter;
 	int		fd;
 
 	i = 0;
-	fd = open(str, O_RDONLY);
-	counter = count(fd);
-	close(fd);
-	tmp = (char **)malloc(counter * sizeof(char *) + 1);
+	if ((tmp = (char **)malloc((counter + 1) * sizeof(char *))) == NULL)
+		return (NULL);
 	fd = open(str, O_RDONLY);
 	while (get_next_line(fd, &line) > 0)
 	{
-		tmp[i] = ft_strdup(line);
+		tmp[i] = line;
 		i++;
 	}
+	tmp[i] = 0;
+	free(line);
 	close(fd);
 	return (tmp);
 }
@@ -61,6 +65,8 @@ char	**change(char **str)
 			a++;
 		while (str[i][j] != '\0')
 		{
+			if (a > 90)
+				return (NULL);
 			if (str[i][j] == '#')
 				str[i][j] = a;
 			j++;
@@ -73,30 +79,30 @@ char	**change(char **str)
 
 char	**changestr(char **tmp, int counter)
 {
-	char	**str;
-	int		i;
-	int		j;
-	int		k;
-	int		z;
+	char			**str;
+	struct s_norme	t;
 
-	i = -1;
-	k = 0;
-	z = 0;
-	str = (char **)malloc((counter / 5 + 2) * sizeof(char *));
-	str[k] = (char *)malloc((16 + 1) * sizeof(char));
-	while (tmp[++i])
+	t.i = -1;
+	t.k = 0;
+	t.z = 0;
+	if ((str = (char **)malloc((counter / 5 + 2) * sizeof(char *))) == NULL)
+		return (NULL);
+	if ((str[t.k] = (char *)malloc((16 + 1) * sizeof(char))) == NULL)
+		return (NULL);
+	while (tmp[++t.i])
 	{
-		j = 0;
-		if (tmp[i][0] == '\0')
+		t.j = 0;
+		if (tmp[t.i][0] == '\0')
 		{
-			str[k++][z] = '\0';
-			str[k] = (char *)malloc((16 + 1) * sizeof(char));
-			z = 0;
+			str[t.k++][t.z] = '\0';
+			if ((str[t.k] = (char *)malloc((16 + 1) * sizeof(char))) == NULL)
+				return (NULL);
+			t.z = 0;
 		}
-		while (tmp[i][j])
-			str[k][z++] = tmp[i][j++];
+		while (tmp[t.i][t.j])
+			str[t.k][t.z++] = tmp[t.i][t.j++];
 	}
-	str = setstr(str, k, z);
+	str = setstr(str, tmp, t.k, t.z);
 	return (str);
 }
 
@@ -106,22 +112,21 @@ int		main(int argc, char **argv)
 	char	**str;
 	int		counter;
 
-	argc = argc + 1;
-	str = readfile(argv[1]);
+	if (argc != 2)
+	{
+		write(1, "usage: fillit input_file\n", 25);
+		return (0);
+	}
 	fd = open(argv[1], O_RDONLY);
 	counter = count(fd);
-	close(fd);
-	if (counter % 5 != 4)
-	{
-		write(1, "error\n", 6);
-		return (0);
-	}
-	if (validation(str) == -1)
-	{
-		write(1, "error\n", 6);
-		return (0);
-	}
-	str = change(str);
-	str = changestr(str, counter);
+	if ((str = readfile(argv[1], counter)) == NULL)
+		error();
+	if (counter % 5 != 4 || validation(str) == -1
+		|| (str = change(str)) == NULL)
+		error();
+	if ((str = changestr(str, counter)) == NULL)
+		error();
 	startmap(str);
+	system("leaks fillit");
+	return (0);
 }

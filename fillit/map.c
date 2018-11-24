@@ -6,12 +6,11 @@
 /*   By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/17 10:26:38 by ikovalen          #+#    #+#             */
-/*   Updated: 2018/11/22 12:23:32 by ikovalen         ###   ########.fr       */
+/*   Updated: 2018/11/24 12:50:49 by ikovalen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
-#include <stdio.h>
 
 char	**newmap(int i)
 {
@@ -19,20 +18,20 @@ char	**newmap(int i)
 	int		col;
 	int		row;
 
-	col = 0;
-	row = 0;
-	map = (char **)malloc(i * sizeof(char *) + 1);
-	while (row < i)
+	row = -1;
+	if ((map = (char **)malloc(i * sizeof(char *) + 1)) == NULL)
+		return (NULL);
+	while (++row < i)
 	{
-		map[row] = (char *)malloc(i * sizeof(char) + 1);
+		col = 0;
+		if ((map[row] = (char *)malloc(i * sizeof(char) + 1)) == NULL)
+			return (NULL);
 		while (col < i)
 		{
 			map[row][col] = '.';
 			col++;
 		}
 		map[row][col] = '\0';
-		col = 0;
-		row++;
 	}
 	map[i] = 0;
 	return (map);
@@ -98,6 +97,7 @@ int		backtracking(char **str, char **map, int i, int size)
 {
 	int row;
 	int col;
+	int z = 0;
 
 	row = 0;
 	if (str[i] == '\0')
@@ -111,7 +111,12 @@ int		backtracking(char **str, char **map, int i, int size)
 				backtracking(str, map, i + 1, size) == 1)
 				return (1);
 			else
+			{
+				z = 0;
+				while (map[z])
+					ft_putendl(map[z++]);
 				map = rmletters(map, str[i]);
+			}
 			col++;
 		}
 		row++;
@@ -127,17 +132,21 @@ void	startmap(char **str)
 
 	j = 0;
 	i = 2;
-	map = newmap(i);
+	if ((map = newmap(i)) == NULL)
+		error();
 	while ((backtracking(str, map, 0, i)) == 0)
 	{
-		free(map);
+		free_map(map, i);
 		i++;
-		map = newmap(i);
+		if ((map = newmap(i)) == NULL)
+			error();
 	}
 	i = 0;
 	while (map[i])
 	{
 		ft_putendl(map[i]);
+		free(map[i]);
 		i++;
 	}
+	free(map);
 }

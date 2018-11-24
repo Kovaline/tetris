@@ -6,7 +6,7 @@
 /*   By: ikovalen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/17 10:26:38 by ikovalen          #+#    #+#             */
-/*   Updated: 2018/11/24 12:50:49 by ikovalen         ###   ########.fr       */
+/*   Updated: 2018/11/24 16:06:53 by ikovalen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ int		backtracking(char **str, char **map, int i, int size)
 {
 	int row;
 	int col;
-	int z = 0;
 
 	row = 0;
 	if (str[i] == '\0')
@@ -111,12 +110,7 @@ int		backtracking(char **str, char **map, int i, int size)
 				backtracking(str, map, i + 1, size) == 1)
 				return (1);
 			else
-			{
-				z = 0;
-				while (map[z])
-					ft_putendl(map[z++]);
 				map = rmletters(map, str[i]);
-			}
 			col++;
 		}
 		row++;

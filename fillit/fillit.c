@@ -127,6 +127,5 @@ int		main(int argc, char **argv)
 	if ((str = changestr(str, counter)) == NULL)
 		error();
 	startmap(str);
-	system("leaks fillit");
 	return (0);
 }
